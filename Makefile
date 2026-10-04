@@ -6,8 +6,8 @@ include $(DEVKITARM)/3ds_rules
 
 TARGET   := halo3ds
 BUILD    := build
-SOURCES  := source/platform
-INCLUDES := include source/platform
+SOURCES  := source/platform source/render3ds
+INCLUDES := include source/platform source/render3ds $(BUILD)/shaders
 APP_TITLE := Halo 1
 APP_DESCRIPTION := Halo: Combat Evolved (decomp port, WIP)
 APP_AUTHOR := halo-1-3ds
@@ -20,10 +20,20 @@ LIBS     := -lcitro3d -lctru -lm
 LIBDIRS  := $(CTRULIB) $(PORTLIBS)
 LDFLAGS  += $(addprefix -L,$(addsuffix /lib,$(LIBDIRS)))
 
-CFILES   := $(wildcard source/platform/*.c)
-OFILES   := $(patsubst %.c,$(BUILD)/%.o,$(CFILES))
+CFILES   := $(foreach d,$(SOURCES),$(wildcard $(d)/*.c))
+OFILES   := $(patsubst %.c,$(BUILD)/%.o,$(CFILES)) $(BUILD)/shaders/ctr_basic.shbin.o
 
 all: $(TARGET).3dsx
+
+# Shaders: picasso -> .shbin -> bin2s -> object + header (<name>_shbin.h)
+$(BUILD)/shaders/%.shbin: shaders/%.v.pica
+	@mkdir -p $(dir $@)
+	picasso -o $@ $<
+
+$(BUILD)/shaders/%.shbin.o $(BUILD)/shaders/%_shbin.h: $(BUILD)/shaders/%.shbin
+	cd $(dir $<) && bin2s -a 4 -H $*_shbin.h $*.shbin | $(AS) -o $*.shbin.o
+
+$(BUILD)/source/render3ds/ctr_gpu.o: $(BUILD)/shaders/ctr_basic_shbin.h
 
 $(BUILD)/%.o: %.c
 	@mkdir -p $(dir $@)

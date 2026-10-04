@@ -1,0 +1,29 @@
+; Basic vertex shader: transform position by MVP, pass through UV and vertex color.
+; Inputs : v0 = position (xyz), v1 = texcoord0 (uv), v2 = color (rgba)
+; Uniform: c0..c3 = model-view-projection (row-major, citro3d convention)
+
+.fvec mvp[4]
+.constf ones(1.0, 1.0, 1.0, 1.0)
+
+.out o_pos  position
+.out o_tc0  texcoord0
+.out o_col  color
+
+.alias in_pos v0
+.alias in_tc  v1
+.alias in_col v2
+
+.proc main
+	; position.w = 1
+	mov r0.xyz, in_pos
+	mov r0.w,   ones.x
+	dp4 o_pos.x, mvp[0], r0
+	dp4 o_pos.y, mvp[1], r0
+	dp4 o_pos.z, mvp[2], r0
+	dp4 o_pos.w, mvp[3], r0
+
+	mov o_tc0.xy, in_tc
+	mov o_tc0.zw, ones.xxxx    ; unused, keep defined
+	mov o_col, in_col
+	end
+.end

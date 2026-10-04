@@ -7,7 +7,7 @@ bool platform_init(void)
 {
     osSetSpeedupEnable(true); /* New 3DS 804 MHz; no-op on Old 3DS */
     gfxInitDefault();
-    consoleInit(GFX_TOP, NULL);
+    consoleInit(GFX_BOTTOM, NULL); /* top screen belongs to citro3d */
     return true;
 }
 
