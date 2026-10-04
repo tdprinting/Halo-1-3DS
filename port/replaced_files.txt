@@ -1,0 +1,21 @@
+# Upstream files the 3DS port replaces with its own implementation (not compiled from upstream).
+# format: path | what replaces it
+source/rasterizer/xbox/*               | source/render3ds (citro3d backend implementing rasterizer.h)
+source/bink/bink_playback.c            | video playback stub / later movie player
+source/bungie_net/common/thread_win32.c | newlib/libctru threads
+source/bungie_net/network/transport_endpoint_set_winsock.c | sockets (soc:u) or stub
+source/bungie_net/network/transport_endpoint_winsock.c     | sockets (soc:u) or stub
+source/cache/cache_files_decompress_windows.c | SD card reads + zlib
+source/cache/cache_files_windows.c     | SD card map loading
+source/cache/xbox_texture_cache.c      | texture cache over ctr_gpu_texture
+source/cseries/cseries_windows.c       | platform layer (exit, memory, assert dialogs)
+source/cseries/stack_walk_windows.c    | stub
+source/input/HaloAutoTest.c            | dropped
+source/input/input_xbox.c              | hid (circle pad, C-stick, buttons, touch)
+source/interface/marketing_and_strategic_business_development.c | stub
+source/interface/progress_bar.c        | loading screen on ctr_gpu (D3D-direct upstream)
+source/saved games/game_state_xbox.c   | SD card saves
+source/saved games/saved_game_files.c  | SD card saves
+source/shell/shell_xbox.c              | platform layer
+source/sound/sound_dsound_xbox.c       | ndsp
+source/tag_files/files_windows.c       | newlib stdio + dirent on sdmc:/

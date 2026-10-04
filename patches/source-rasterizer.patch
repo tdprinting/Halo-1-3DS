@@ -1,0 +1,43 @@
+diff -ruN a/source/rasterizer/rasterizer_debug.c b/source/rasterizer/rasterizer_debug.c
+--- a/source/rasterizer/rasterizer_debug.c	2026-10-04 01:02:43.327868605 +0000
++++ b/source/rasterizer/rasterizer_debug.c	2026-10-04 01:42:10.358120369 +0000
+@@ -388,7 +388,7 @@
+ 					}
+ 
+ 					rasterizer_dynamic_vertices_unlock(vertex_buffer_index);
+-					rasterizer_debug_drawing_begin(TRUE, 0);
++					rasterizer_debug_drawing_begin_zbias(TRUE, 0);
+ 					rasterizer_draw_dynamic_vertices(
+ 						0,
+ 						triangle_count,
+@@ -440,7 +440,7 @@
+ 					}
+ 
+ 					rasterizer_dynamic_vertices_unlock(vertex_buffer_index);
+-					rasterizer_debug_drawing_begin(TRUE, RASTERIZER_DEBUG_LINE_ZBIAS);
++					rasterizer_debug_drawing_begin_zbias(TRUE, RASTERIZER_DEBUG_LINE_ZBIAS);
+ 					rasterizer_draw_dynamic_vertices(
+ 						0,
+ 						line_count,
+@@ -485,7 +485,7 @@
+ 							primitive->vertices,
+ 							primitive->vertex_count*sizeof(struct rasterizer_debug_vertex));
+ 						rasterizer_dynamic_vertices_unlock(vertex_buffer_index);
+-						rasterizer_debug_drawing_begin(FALSE, 0);
++						rasterizer_debug_drawing_begin_zbias(FALSE, 0);
+ 						rasterizer_draw_dynamic_vertices(
+ 							0,
+ 							1,
+diff -ruN a/source/rasterizer/xbox/rasterizer_xbox_debug.h b/source/rasterizer/xbox/rasterizer_xbox_debug.h
+--- a/source/rasterizer/xbox/rasterizer_xbox_debug.h	2026-10-04 01:02:43.332725557 +0000
++++ b/source/rasterizer/xbox/rasterizer_xbox_debug.h	2026-10-04 01:42:10.358277744 +0000
+@@ -18,7 +18,8 @@
+  * +0x20e, +0x2ee, +0x3a0) pushes two arguments while the callee (0x549db0) reads only
+  * [ebp+8]. The two declarations conflict (C4031); under cdecl the callee ignores the
+  * extra argument. Source-policy approval pending (2026-09-27 audit). */
+-void rasterizer_debug_drawing_begin(
++/* port: GCC rejects the conflicting prototype, so the two-argument form has its own name. */
++void rasterizer_debug_drawing_begin_zbias(
+ 	boolean opaque,
+ 	long zbias);
+ void rasterizer_debug_drawing_end(

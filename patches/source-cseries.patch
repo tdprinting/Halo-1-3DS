@@ -1,0 +1,134 @@
+diff -ruN a/source/cseries/cseries.c b/source/cseries/cseries.c
+--- a/source/cseries/cseries.c	2026-10-04 01:02:43.260447695 +0000
++++ b/source/cseries/cseries.c	2026-10-04 01:42:10.348643889 +0000
+@@ -535,66 +535,26 @@
+ 	return c1 > c2 ? 1 : -1;
+ }
+ 
+-__declspec(naked) char *stristr(
++char *stristr(
+ 	const char *haystack,
+ 	const char *needle)
+ {
+-	__asm
++	long needle_length = csstrlen(needle);
++
++	if (!*needle)
+ 	{
+-		push ebp
+-		mov ebp, esp
+-		push ebx
+-		push esi
+-		push edi
+-		mov edi, needle
+-		mov bl, byte ptr [edi]
+-		inc edi
+-		test bl, bl
+-		je empty_needle
+-		push edi
+-		call csstrlen
+-		mov esi, haystack
+-		add esp, 4
+-		mov needle, eax
+-		nop
+-	search:
+-		mov al, byte ptr [esi]
+-		inc esi
+-		test al, al
+-		je no_match
+-		cmp al, bl
+-		jne search
+-		mov eax, needle
+-		push eax
+-		push edi
+-		push esi
+-		call _strnicmp
+-		add esp, 12
+-		test eax, eax
+-		jne search
+-		dec esi
+-		pop edi
+-		mov eax, esi
+-		pop esi
+-		pop ebx
+-		pop ebp
+-		ret
+-	no_match:
+-		pop edi
+-		pop esi
+-		xor eax, eax
+-		pop ebx
+-		pop ebp
+-		ret
+-	empty_needle:
+-		mov esi, haystack
+-		pop edi
+-		mov eax, esi
+-		pop esi
+-		pop ebx
+-		pop ebp
+-		ret
++		return (char *)haystack;
+ 	}
++
++	for (; *haystack; haystack++)
++	{
++		if (strncasecmp(haystack, needle, needle_length)==0)
++		{
++			return (char *)haystack;
++		}
++	}
++
++	return NULL;
+ }
+ 
+ unsigned long string_hash(
+diff -ruN a/source/cseries/cseries.h b/source/cseries/cseries.h
+--- a/source/cseries/cseries.h	2026-10-04 01:02:43.260447695 +0000
++++ b/source/cseries/cseries.h	2026-10-04 01:42:10.348804916 +0000
+@@ -311,11 +311,7 @@
+ {
+ 	long result;
+ 
+-	__asm
+-	{
+-		fld value
+-		fistp result
+-	}
++	result = lrintf(value); /* x87 FISTP rounds to nearest-even */
+ 
+ 	return result;
+ }
+diff -ruN a/source/cseries/headers.c b/source/cseries/headers.c
+--- a/source/cseries/headers.c	2026-10-04 01:02:43.260447695 +0000
++++ b/source/cseries/headers.c	2026-10-04 01:42:10.348883489 +0000
+@@ -9,6 +9,7 @@
+ /* ---------- headers */
+ 
+ #include <stdio.h>
++#include "cseries/cseries.h"
+ #include "cseries/cseries_windows.h"
+ 
+ /* ---------- constants */
+diff -ruN a/source/cseries/profile.c b/source/cseries/profile.c
+--- a/source/cseries/profile.c	2026-10-04 01:02:43.260447695 +0000
++++ b/source/cseries/profile.c	2026-10-04 01:42:10.349032265 +0000
+@@ -322,16 +322,8 @@
+ 
+ /* ---------- macros */
+ 
+-#define QUERY_TIMEBASE(timebase) \
+-{ \
+-	__asm push eax \
+-	__asm push edx \
+-	__asm rdtsc \
+-	__asm mov dword ptr timebase, eax \
+-	__asm mov dword ptr timebase+4, edx \
+-	__asm pop edx \
+-	__asm pop eax \
+-}
++extern unsigned long long halo_platform_cycles(void); /* provided by the platform layer (ARM11 has no rdtsc) */
++#define QUERY_TIMEBASE(timebase) ((timebase) = (__int64)halo_platform_cycles())
+ 
+ /* ---------- structures */
+ 

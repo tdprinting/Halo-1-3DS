@@ -1,0 +1,303 @@
+diff -ruN a/source/bitmaps/bitmap_drawing.c b/source/bitmaps/bitmap_drawing.c
+--- a/source/bitmaps/bitmap_drawing.c	2026-10-04 01:02:43.237573389 +0000
++++ b/source/bitmaps/bitmap_drawing.c	2026-10-04 01:42:10.346606744 +0000
+@@ -603,34 +603,34 @@
+ 			case _bitmap_copy_16bit:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					*((word *)destination_address)++ = *((word *)source_address)++;
++					(*(*(word **)&destination_address)++) = (*(*(word **)&source_address)++);
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_a1r5g5b5_to_r5g6b5:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					word source_pixel = *((word *)source_address)++;
++					word source_pixel = (*(*(word **)&source_address)++);
+ 
+-					*((word *)destination_address)++ = (word)(((source_pixel << 1) & 0xffc0) | (source_pixel & 0x3f));
++					(*(*(word **)&destination_address)++) = (word)(((source_pixel << 1) & 0xffc0) | (source_pixel & 0x3f));
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_r5g6b5_to_a1r5g5b5:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					word source_pixel = *((word *)source_address)++;
++					word source_pixel = (*(*(word **)&source_address)++);
+ 
+-					*((word *)destination_address)++ = (word)(((source_pixel >> 1) & 0x7fe0) | (source_pixel & 0x1f));
++					(*(*(word **)&destination_address)++) = (word)(((source_pixel >> 1) & 0x7fe0) | (source_pixel & 0x1f));
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_r5g6b5_to_a8r8g8b8:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					word source_pixel = *((word *)source_address)++;
++					word source_pixel = (*(*(word **)&source_address)++);
+ 
+-					*((pixel32 *)destination_address)++ = 0xff000000 |
++					(*(*(pixel32 **)&destination_address)++) = 0xff000000 |
+ 						(((((source_pixel >> 11) & 0x1f) << 3) | (((source_pixel >> 11) & 0x1f) >> 2)) << 16) |
+ 						(((((source_pixel >> 5) & 0x3f) << 2) | (((source_pixel >> 5) & 0x3f) >> 4)) << 8) |
+ 						(((source_pixel & 0x1f) << 3) | ((source_pixel & 0x1f) >> 2));
+@@ -640,9 +640,9 @@
+ 			case _bitmap_copy_a4r4g4b4_to_a8r8g8b8:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					word source_pixel = *((word *)source_address)++;
++					word source_pixel = (*(*(word **)&source_address)++);
+ 
+-					*((pixel32 *)destination_address)++ =
++					(*(*(pixel32 **)&destination_address)++) =
+ 						(((((source_pixel >> 12) & 0xf) << 4) | ((source_pixel >> 12) & 0xf)) << 24) |
+ 						(((((source_pixel >> 8) & 0xf) << 4) | ((source_pixel >> 8) & 0xf)) << 16) |
+ 						(((((source_pixel >> 4) & 0xf) << 4) | ((source_pixel >> 4) & 0xf)) << 8) |
+@@ -653,7 +653,7 @@
+ 			case _bitmap_copy_a4r4g4b4_to_a8r8g8b8_blend:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					word pixel = *((word *)source_address)++;
++					word pixel = (*(*(word **)&source_address)++);
+ 					pixel32 source_pixel =
+ 						(((((pixel >> 12) & 0xf) << 4) | ((pixel >> 12) & 0xf)) << 24) |
+ 						(((((pixel >> 8) & 0xf) << 4) | ((pixel >> 8) & 0xf)) << 16) |
+@@ -667,14 +667,14 @@
+ 						(((((source_pixel >> 8) & 0xff) * alpha) >> 8) + ((((*(pixel32 *)destination_address >> 8) & 0xff) * inverse_alpha) >> 8)) << 8 |
+ 						((((source_pixel & 0xff) * alpha) >> 8) + (((*(pixel32 *)destination_address & 0xff) * inverse_alpha) >> 8)) |
+ 						MAX(alpha, *(pixel32 *)destination_address >> 24) << 24;
+-					((pixel32 *)destination_address)++;
++					(*(pixel32 **)&destination_address)++;
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_a4r4g4b4_to_a8r8g8b8_modulate_blend:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					word pixel = *((word *)source_address)++;
++					word pixel = (*(*(word **)&source_address)++);
+ 					pixel32 source_pixel =
+ 						(((pixel >> 12) & 0xf) * ((converted_color >> 12) & 0xf)) << 24 |
+ 						(((pixel >> 8) & 0xf) * ((converted_color >> 8) & 0xf)) << 16 |
+@@ -688,21 +688,21 @@
+ 						(((((source_pixel >> 8) & 0xff) * alpha) >> 8) + ((((*(pixel32 *)destination_address >> 8) & 0xff) * inverse_alpha) >> 8)) << 8 |
+ 						((((source_pixel & 0xff) * alpha) >> 8) + (((*(pixel32 *)destination_address & 0xff) * inverse_alpha) >> 8)) |
+ 						MAX(alpha, *(pixel32 *)destination_address >> 24) << 24;
+-					((pixel32 *)destination_address)++;
++					(*(pixel32 **)&destination_address)++;
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_a8r8g8b8:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					*((pixel32 *)destination_address)++ = *((pixel32 *)source_address)++;
++					(*(*(pixel32 **)&destination_address)++) = (*(*(pixel32 **)&source_address)++);
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_a8r8g8b8_blend:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					pixel32 source_pixel = *((pixel32 *)source_address)++;
++					pixel32 source_pixel = (*(*(pixel32 **)&source_address)++);
+ 					byte alpha = source_pixel >> 24;
+ 					byte inverse_alpha = 255 - alpha;
+ 
+@@ -711,16 +711,16 @@
+ 						(((((source_pixel >> 8) & 0xff) * alpha) >> 8) + ((((*(pixel32 *)destination_address >> 8) & 0xff) * inverse_alpha) >> 8)) << 8 |
+ 						((((source_pixel & 0xff) * alpha) >> 8) + (((*(pixel32 *)destination_address & 0xff) * inverse_alpha) >> 8)) |
+ 						MAX(alpha, *(pixel32 *)destination_address >> 24) << 24;
+-					((pixel32 *)destination_address)++;
++					(*(pixel32 **)&destination_address)++;
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_a8r8g8b8_modulate:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					pixel32 pixel = *((pixel32 *)source_address)++;
++					pixel32 pixel = (*(*(pixel32 **)&source_address)++);
+ 
+-					*((pixel32 *)destination_address)++ =
++					(*(*(pixel32 **)&destination_address)++) =
+ 						((((pixel >> 24) & 0xff) * ((converted_color >> 24) & 0xff) >> 8) << 24) |
+ 						((((pixel >> 16) & 0xff) * ((converted_color >> 16) & 0xff) >> 8) << 16) |
+ 						((((pixel >> 8) & 0xff) * ((converted_color >> 8) & 0xff) >> 8) << 8) |
+@@ -731,7 +731,7 @@
+ 			case _bitmap_copy_a8r8g8b8_modulate_blend:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					pixel32 source_pixel = *((pixel32 *)source_address)++;
++					pixel32 source_pixel = (*(*(pixel32 **)&source_address)++);
+ 					byte alpha;
+ 					byte inverse_alpha;
+ 
+@@ -748,16 +748,16 @@
+ 						(((((source_pixel >> 8) & 0xff) * alpha) >> 8) + ((((*(pixel32 *)destination_address >> 8) & 0xff) * inverse_alpha) >> 8)) << 8 |
+ 						((((source_pixel & 0xff) * alpha) >> 8) + (((*(pixel32 *)destination_address & 0xff) * inverse_alpha) >> 8)) |
+ 						MAX(alpha, *(pixel32 *)destination_address >> 24) << 24;
+-					((pixel32 *)destination_address)++;
++					(*(pixel32 **)&destination_address)++;
+ 				}
+ 				break;
+ 
+ 			case _bitmap_copy_a8r8g8b8_to_r5g6b5:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					pixel32 source_pixel = *((pixel32 *)source_address)++;
++					pixel32 source_pixel = (*(*(pixel32 **)&source_address)++);
+ 
+-					*((word *)destination_address)++ = (word)(
++					(*(*(word **)&destination_address)++) = (word)(
+ 						((((source_pixel >> 16) & 0xff) >> 3) << 11) |
+ 						((((source_pixel >> 8) & 0xff) >> 2) << 5) |
+ 						((source_pixel & 0xff) >> 3));
+@@ -767,9 +767,9 @@
+ 			case _bitmap_copy_a8r8g8b8_to_a4r4g4b4:
+ 				for (x = 0; x < width; x++)
+ 				{
+-					pixel32 source_pixel = *((pixel32 *)source_address)++;
++					pixel32 source_pixel = (*(*(pixel32 **)&source_address)++);
+ 
+-					*((word *)destination_address)++ = (word)(
++					(*(*(word **)&destination_address)++) = (word)(
+ 						(((source_pixel >> 24) >> 4) << 12) |
+ 						((((source_pixel >> 16) & 0xff) >> 4) << 8) |
+ 						((((source_pixel >> 8) & 0xff) >> 4) << 4) |
+diff -ruN a/source/bitmaps/bitmaps_inlines.h b/source/bitmaps/bitmaps_inlines.h
+--- a/source/bitmaps/bitmaps_inlines.h	2026-10-04 01:02:43.237573389 +0000
++++ b/source/bitmaps/bitmaps_inlines.h	2026-10-04 01:42:10.346940113 +0000
+@@ -61,77 +61,13 @@
+ 			color->blue));
+ 
+ 	{
+-		long alpha;
+-		long red;
+-		long green;
+-		long blue;
+-
+-		__asm
+-		{
+-			mov		edx, color
+-			fld		dword ptr [edx]
+-			fld		dword ptr [edx+4]
+-			fld		dword ptr [edx+8]
+-			fld		dword ptr [edx+12]
+-			fld		scale
+-			fmul	st(4), st
+-			fmul	st(3), st
+-			fmul	st(2), st
+-			fmulp	st(1), st
+-			fistp	blue
+-			fistp	green
+-			fistp	red
+-			fistp	alpha
+-			mov		edx, blue
+-			mov		ebx, green
+-			mov		ecx, red
+-			mov		eax, alpha
+-			shl		ebx, 8
+-			shl		ecx, 16
+-			shl		eax, 24
+-			or		edx, ebx
+-			or		edx, ecx
+-			or		edx, eax
+-			mov		result, edx
+-		}
+-	}
+-
+-	{
+-		pixel32 verify;
++		/* x87 FISTP rounds to nearest-even, as does lrintf. */
++		long alpha = lrintf(color->alpha*scale);
++		long red = lrintf(color->red*scale);
++		long green = lrintf(color->green*scale);
++		long blue = lrintf(color->blue*scale);
+ 
+-		__asm
+-		{
+-			mov		edx, color
+-			fld		dword ptr [edx]
+-			fld		dword ptr [edx+4]
+-			fld		dword ptr [edx+8]
+-			fld		dword ptr [edx+12]
+-			fld		scale
+-			fmul	st(4), st
+-			fmul	st(3), st
+-			fmul	st(2), st
+-			fmulp	st(1), st
+-			fistp	verify
+-			and		verify, 0FFh
+-			mov		edx, verify
+-			fistp	verify
+-			and		verify, 0FFh
+-			shl		verify, 8
+-			or		edx, verify
+-			fistp	verify
+-			and		verify, 0FFh
+-			shl		verify, 16
+-			or		edx, verify
+-			fistp	verify
+-			shl		verify, 24
+-			or		edx, verify
+-			mov		verify, edx
+-		}
+-
+-		match_assert(
+-			"..\\bitmaps\\bitmaps_inlines.h",
+-			188,
+-			verify == result);
++		result = (pixel32)(blue | (green<<8) | (red<<16) | (alpha<<24));
+ 	}
+ 
+ 	return result;
+@@ -145,29 +81,7 @@
+ 
+ 	match_assert_valid_real_rgb_color("..\\bitmaps\\bitmaps_inlines.h", 0xC9, color);
+ 
+-	__asm
+-	{
+-		mov edx, color
+-		fld dword ptr [edx]
+-		fld dword ptr [edx+4]
+-		fld dword ptr [edx+8]
+-		fld scale
+-		fmul st(3), st(0)
+-		fmul st(2), st(0)
+-		fmulp st(1), st(0)
+-		fistp result
+-		and result, 0ffh
+-		mov edx, result
+-		fistp result
+-		and result, 0ffh
+-		shl result, 8
+-		or edx, result
+-		fistp result
+-		and result, 0ffh
+-		shl result, 16
+-		or edx, result
+-		mov result, edx
+-	}
++	result = (pixel32)((lrintf(color->blue*scale)&0xFF) | ((lrintf(color->green*scale)&0xFF)<<8) | ((lrintf(color->red*scale)&0xFF)<<16));
+ 
+ 	return result;
+ }
+@@ -187,14 +101,7 @@
+ 		291,
+ 		alpha>=0.0f && alpha<=1.0f);
+ 
+-	__asm
+-	{
+-		fld		alpha
+-		fld		scale
+-		fmulp	st(1), st
+-		fistp	result
+-		shl		result, 24
+-	}
++	result = (pixel32)(lrintf(alpha*scale)<<24);
+ 
+ 	return result;
+ }

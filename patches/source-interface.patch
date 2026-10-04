@@ -1,0 +1,32 @@
+diff -ruN a/source/interface/hud_draw.c b/source/interface/hud_draw.c
+--- a/source/interface/hud_draw.c	2026-10-04 01:02:43.282726595 +0000
++++ b/source/interface/hud_draw.c	2026-10-04 01:42:10.352569813 +0000
+@@ -411,14 +411,10 @@
+ 
+ /* Inspect the guarded caller's frame, not the return site of this helper.
+  * A normal prologue would replace EBP and defeat the paired stack check. */
+-__declspec(naked) long get_return_eip(
++long get_return_eip(
+ 	void)
+ {
+-	__asm
+-	{
+-		mov eax, [ebp+4]
+-		ret
+-	}
++	return (long)__builtin_return_address(0);
+ }
+ 
+ real hud_globals_get_scale(
+diff -ruN a/source/interface/terminal.c b/source/interface/terminal.c
+--- a/source/interface/terminal.c	2026-10-04 01:02:43.282726595 +0000
++++ b/source/interface/terminal.c	2026-10-04 01:42:10.352825816 +0000
+@@ -319,7 +319,7 @@
+ 	...)
+ {
+ 	real_argb_color default_terminal_printf_color;
+-	char *arglist;
++	va_list arglist;
+ 
+ 	va_start(arglist, format);
+ 

@@ -1,0 +1,14 @@
+diff -ruN a/source/memory/byte_swapping.c b/source/memory/byte_swapping.c
+--- a/source/memory/byte_swapping.c	2026-10-04 01:02:43.300177298 +0000
++++ b/source/memory/byte_swapping.c	2026-10-04 01:42:10.356220534 +0000
+@@ -61,8 +61,8 @@
+ 
+ #define SWAP8(q) \
+ 	(((q)>>56) | (((q)>>40)&0xff00) | (((q)>>24)&0xff0000) | (((q)>>8)&0xff000000) | \
+-	 (((q)<<8)&0xff00000000ui64) | (((q)<<24)&0xff0000000000ui64) | \
+-	 (((q)<<40)&0xff000000000000ui64) | ((q)<<56))
++	 (((q)<<8)&0xff00000000ULL) | (((q)<<24)&0xff0000000000ULL) | \
++	 (((q)<<40)&0xff000000000000ULL) | ((q)<<56))
+ 
+ /* ---------- structures */
+ 
